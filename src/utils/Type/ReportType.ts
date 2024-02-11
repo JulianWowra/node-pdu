@@ -1,15 +1,15 @@
 import { PDUType } from './PDUType';
 
-export type ReportParams = {
-	replyPath?: number;
-	userDataHeader?: number;
-	statusReportRequest?: number;
-	mms?: number;
-};
-
+/**
+ * Represents the PDU type for an SMS-REPORT message in GSM SMS messaging.
+ */
 export class ReportType extends PDUType {
 	readonly messageTypeIndicator = PDUType.SMS_REPORT;
 
+	/**
+	 * Constructs a ReportType instance.
+	 * @param params Parameters for configuring the ReportType instance
+	 */
 	constructor(params: ReportParams = {}) {
 		super({
 			replyPath: params.replyPath ? 1 & params.replyPath : 0,
@@ -20,3 +20,10 @@ export class ReportType extends PDUType {
 		});
 	}
 }
+
+export type ReportParams = {
+	replyPath?: number;
+	userDataHeader?: number;
+	statusReportRequest?: number;
+	mms?: number;
+};

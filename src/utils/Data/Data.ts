@@ -5,13 +5,12 @@ import { Helper } from '../Helper';
 import { Header } from './Header';
 import { Part } from './Part';
 
-export type DataOptions = {
-	data?: string;
-	size?: number;
-	parts?: Part[];
-	isUnicode?: boolean;
-};
-
+/**
+ * Represents the data content of an SMS message.
+ *
+ * Holds the actual message content, whether text or binary data. It is central to the purpose of SMS,
+ * conveying the intended information from sender to recipient.
+ */
 export class Data {
 	static readonly HEADER_SIZE = 7; // UDHL + UDH
 
@@ -20,6 +19,10 @@ export class Data {
 	private _parts: Part[];
 	private _isUnicode: boolean;
 
+	/**
+	 * Constructs a Data instance.
+	 * @param options An object containing optional parameters for the Data instance
+	 */
 	constructor(options: DataOptions = {}) {
 		this._size = options.size || 0;
 		this._data = options.data || '';
@@ -28,25 +31,69 @@ export class Data {
 	}
 
 	/*
-	 * getter & setter
+	 * ================================================
+	 *                Getter & Setter
+	 * ================================================
 	 */
 
+	/**
+	 * Gets the raw data of the SMS message.
+	 *
+	 * This property holds the actual content of the message, which could be text or binary data,
+	 * depending on how the message was encoded.
+	 *
+	 * @returns The raw data as a string
+	 */
 	get data() {
 		return this._data;
 	}
 
+	/**
+	 * Retrieves the size of the message data.
+	 *
+	 * The size is determined based on the encoding and content of the message. It reflects the
+	 * number of characters or bytes.
+	 *
+	 * @returns The size of the data
+	 */
 	get size() {
 		return this._size;
 	}
 
+	/**
+	 * Provides access to the individual parts of the message.
+	 *
+	 * For longer messages that are split into multiple parts (segments), this getter allows access
+	 * to each part. Each part contains a portion of the message data along with metadata.
+	 *
+	 * @returns An array of Part instances, each representing a segment of the message
+	 */
 	get parts() {
 		return this._parts;
 	}
 
+	/**
+	 * Indicates whether the message data is encoded using Unicode.
+	 *
+	 * This property is true if the message content includes characters that require Unicode encoding
+	 * (e.g., non-Latin characters). Otherwise, it's false.
+	 *
+	 * @returns A boolean indicating if the message data is Unicode.
+	 */
 	get isUnicode() {
 		return this._isUnicode;
 	}
 
+	/**
+	 * Sets the data for the SMS message.
+	 *
+	 * This method encodes the provided data string according to the specified PDU type (Deliver or Submit)
+	 * and updates the message parts accordingly. It handles encoding, part splitting, and header preparation.
+	 *
+	 * @param data The new message data as a string
+	 * @param pdu The PDU instance (Deliver or Submit) associated with this data
+	 * @returns The instance of this Data, allowing for method chaining
+	 */
 	setData(data: string, pdu: Deliver | Submit) {
 		this._data = data;
 
@@ -60,7 +107,9 @@ export class Data {
 	}
 
 	/*
-	 * private functions
+	 * ================================================
+	 *                Private functions
+	 * ================================================
 	 */
 
 	private checkData() {
@@ -191,13 +240,31 @@ export class Data {
 	}
 
 	/*
-	 * public functions
+	 * ================================================
+	 *                 Public functions
+	 * ================================================
 	 */
 
+	/**
+	 * Retrieves the textual content of the SMS message.
+	 *
+	 * This method decodes the raw data into a readable text format, considering the encoding scheme
+	 * (e.g., GSM 7-bit, UCS-2) used for the message.
+	 *
+	 * @returns The decoded text of the message
+	 */
 	getText() {
 		return this.data;
 	}
 
+	/**
+	 * Appends the parts from another PDU to this data instance.
+	 *
+	 * This method is used to combine the parts of another message (Deliver or Submit) into this one,
+	 * effectively concatenating the messages. It ensures parts are added only once and sorts them.
+	 *
+	 * @param pdu The PDU instance (Deliver or Submit) whose parts are to be appended
+	 */
 	append(pdu: Deliver | Submit) {
 		pdu.getParts().forEach((part) => {
 			if (!this.partExists(part)) {
@@ -208,3 +275,10 @@ export class Data {
 		this.sortParts();
 	}
 }
+
+export type DataOptions = {
+	data?: string;
+	size?: number;
+	parts?: Part[];
+	isUnicode?: boolean;
+};

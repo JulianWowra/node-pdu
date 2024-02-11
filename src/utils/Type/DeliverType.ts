@@ -1,15 +1,15 @@
 import { PDUType } from './PDUType';
 
-export type DeliverParams = {
-	replyPath?: number;
-	userDataHeader?: number;
-	statusReportRequest?: number;
-	mms?: number;
-};
-
+/**
+ * Represents the PDU type for an SMS-DELIVER message in GSM SMS messaging.
+ */
 export class DeliverType extends PDUType {
 	readonly messageTypeIndicator = PDUType.SMS_DELIVER;
 
+	/**
+	 * Constructs a DeliverType instance.
+	 * @param params Parameters for configuring the DeliverType instance
+	 */
 	constructor(params: DeliverParams = {}) {
 		super({
 			replyPath: params.replyPath ? 1 & params.replyPath : 0,
@@ -20,3 +20,10 @@ export class DeliverType extends PDUType {
 		});
 	}
 }
+
+export type DeliverParams = {
+	replyPath?: number;
+	userDataHeader?: number;
+	statusReportRequest?: number;
+	mms?: number;
+};
