@@ -1,16 +1,8 @@
-.git
-.github
-docs
-node_modules
-src
-tests
-tests-dist
-.editorconfig
-.eslintrc.js
-.gitignore
-.npmignore
-.prettierignore
-.prettierrc.js
-tsconfig.json
-typedoc.css
-yarn.lock
+# Ignore everything by default
+*
+
+# Include specific directories and files
+!dist/**/*
+!LICENSE
+!package.json
+!README.md

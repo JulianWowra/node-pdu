@@ -1,7 +1,7 @@
 /**
  * @type {import("prettier").Options}
  */
-module.exports = {
+export default {
 	semi: true,
 	trailingComma: 'none',
 	singleQuote: true,
