@@ -2,8 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { parse } from '../src/index';
 import { expectDeliver, expectUserData } from './utils/checkPdu';
 
-describe('Appending PDU strings', () => {
-	test('Simple concatenated message', () => {
+describe('PDU concatenation and message reassembly', () => {
+	test('should correctly append simple concatenated messages (in order)', () => {
 		const pduStr1 = '07919730071111F1400B919746121611F10000811170021222230E06080412340201C8329BFD6601';
 		const pduStr2 = '07919730071111F1400B919746121611F10000811170021232230F06080412340202A0FB5BCE268700';
 
@@ -17,7 +17,7 @@ describe('Appending PDU strings', () => {
 		expectUserData(parsedPdu1, { text: 'Hello, world!' });
 	});
 
-	test('Concatenated message with reversed part order', () => {
+	test('should correctly append concatenated messages with reversed part order', () => {
 		const pduStr1 = '07919730071111F1400B919746121611F10000811170021232230F06080412350202A0FB5BCE268700';
 		const pduStr2 = '07919730071111F1400B919746121611F10000811170021222230B06080412350201C8340B';
 
@@ -50,7 +50,7 @@ describe('Appending PDU strings', () => {
 			pduStr2: '07919730071111F1400B919746121611F10000811170021242230D06080412340303A076D8FD03',
 			text: "What's man?"
 		}
-	])('Concatenated message unsorted parts ($parts)', ({ pduStr1, pduStr2, text }) => {
+	])('should append unsorted message parts ($parts)', ({ pduStr1, pduStr2, text }) => {
 		const parsedPdu1 = parse(pduStr1);
 		expectDeliver(parsedPdu1);
 
@@ -61,7 +61,7 @@ describe('Appending PDU strings', () => {
 		expectUserData(parsedPdu1, { text });
 	});
 
-	test('Duplicated parts of a concatenated message', () => {
+	test('should not duplicate user data when appending the same part twice', () => {
 		const pduStr = '07919730071111F1400B919746121611F10000811170021222230E06080412340201C8329BFD6601';
 
 		const parsedPdu = parse(pduStr);
@@ -73,7 +73,7 @@ describe('Appending PDU strings', () => {
 		expectUserData(parsedPdu, { text: 'Hello,' });
 	});
 
-	test('Parts of different messages', () => {
+	test('should throw error when appending parts from different messages', () => {
 		const pduStr1 = '07919730071111F1400B919746121611F10000811170021222230E06080412340201C8329BFD6601';
 		const pduStr2 = '07919730071111F1400B919746121611F10000811170021232230F06080412350202A0FB5BCE268700';
 
@@ -86,7 +86,7 @@ describe('Appending PDU strings', () => {
 		expect(() => parsedPdu1.data.append(parsedPdu2)).toThrowError('Part from different message!');
 	});
 
-	test('Parts with a collided identifiers', () => {
+	test('should throw error when appending parts with collided identifiers', () => {
 		const pduStr1 = '07919730071111F1400B919746121611F10000811170021222230E06080412340201C8329BFD6601';
 		const pduStr2 = '07919730071111F1400B919746121611F10000811170021232230C06080412340302A03A9C05';
 
@@ -99,7 +99,7 @@ describe('Appending PDU strings', () => {
 		expect(() => parsedPdu1.data.append(parsedPdu2)).toThrowError('Part from different message!');
 	});
 
-	test('Concat message with 8bit ref.', () => {
+	test('should correctly append concatenated message using 8-bit reference', () => {
 		const pduStr1 = '07919730071111F1400B919746121611F10000100161916223230D0500032E020190E175DD1D06';
 		const pduStr2 = '07919730071111F1400B919746121611F10000100161916233230E0500032E020240ED303D4C0F03';
 
