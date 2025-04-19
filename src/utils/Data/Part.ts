@@ -1,7 +1,7 @@
-import { Deliver } from '../../Deliver';
-import { Submit } from '../../Submit';
+import type { Deliver } from '../../Deliver';
+import type { Submit } from '../../Submit';
 import { Helper } from '../Helper';
-import { Header } from './Header';
+import type { Header } from './Header';
 
 /**
  * Represents a part of a segmented SMS message.
@@ -61,6 +61,6 @@ export class Part {
 	 */
 	toString(pdu: Deliver | Submit) {
 		// concate pdu, size of part, headers, data
-		return this.getPduString(pdu) + this.getPartSize() + (!!this.header ? this.header.toString() : '') + this.data;
+		return this.getPduString(pdu) + this.getPartSize() + (this.header ? this.header.toString() : '') + this.data;
 	}
 }

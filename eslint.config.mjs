@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
 	{
-		ignores: ['*', '!src']
+		ignores: ['*', '!src', '!tests']
 	},
 	eslint.configs.recommended,
 	...tseslint.configs.recommendedTypeChecked,

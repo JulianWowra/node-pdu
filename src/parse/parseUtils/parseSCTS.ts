@@ -1,5 +1,5 @@
 import { SCTS } from '../../utils/SCTS';
-import { GetSubstr } from '../index';
+import type { GetSubstr } from '../index';
 
 /**
  * Parses the Service Center Time Stamp (SCTS) from a given substring extractor.

@@ -1,7 +1,7 @@
 import { PDUType } from '../../utils/Type/PDUType';
-import { SubmitType } from '../../utils/Type/SubmitType';
+import type { SubmitType } from '../../utils/Type/SubmitType';
 import { VP } from '../../utils/VP';
-import { GetSubstr } from '../index';
+import type { GetSubstr } from '../index';
 import parseSCTS from './parseSCTS';
 
 /**

@@ -1,9 +1,9 @@
 import { DCS } from './DCS';
 import { PID } from './PID';
 import { SCA } from './SCA/SCA';
-import { DeliverType } from './Type/DeliverType';
-import { ReportType } from './Type/ReportType';
-import { SubmitType } from './Type/SubmitType';
+import type { DeliverType } from './Type/DeliverType';
+import type { ReportType } from './Type/ReportType';
+import type { SubmitType } from './Type/SubmitType';
 
 /**
  * An abstract base class for Protocol Data Units (PDU) in SMS messaging.

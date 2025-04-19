@@ -1,6 +1,6 @@
-import { PDU, PDUOptions } from './utils/PDU';
-import { SCA } from './utils/SCA/SCA';
-import { SCTS } from './utils/SCTS';
+import { PDU, type PDUOptions } from './utils/PDU';
+import type { SCA } from './utils/SCA/SCA';
+import type { SCTS } from './utils/SCTS';
 import { ReportType } from './utils/Type/ReportType';
 
 /**

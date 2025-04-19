@@ -1,5 +1,5 @@
 import { PID } from '../../utils/PID';
-import { GetSubstr } from '../index';
+import type { GetSubstr } from '../index';
 
 /**
  * Parses Protocol Identifier (PID) from a PDU string.

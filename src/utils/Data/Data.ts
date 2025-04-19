@@ -1,5 +1,5 @@
-import { Deliver } from '../../Deliver';
-import { Submit } from '../../Submit';
+import type { Deliver } from '../../Deliver';
+import type { Submit } from '../../Submit';
 import { DCS } from '../DCS';
 import { Helper } from '../Helper';
 import { Header } from './Header';

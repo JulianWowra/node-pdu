@@ -1,5 +1,5 @@
-import { DCS, DCSOptions } from '../../utils/DCS';
-import { GetSubstr } from '../index';
+import { DCS, type DCSOptions } from '../../utils/DCS';
+import type { GetSubstr } from '../index';
 
 /**
  * Parses Data Coding Scheme (DCS) information from a PDU substring extractor.

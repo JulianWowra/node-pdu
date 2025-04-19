@@ -153,7 +153,7 @@ export class Header {
 	 */
 	getPointerSize() {
 		if (this.concatIeIdx !== undefined) {
-			this.ies[this.concatIeIdx].dataHex.length / 2;
+			return this.ies[this.concatIeIdx].dataHex.length / 2;
 		}
 
 		return 0;

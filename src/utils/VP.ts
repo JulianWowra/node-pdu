@@ -1,5 +1,5 @@
 import { Helper } from './Helper';
-import { PDU } from './PDU';
+import type { PDU } from './PDU';
 import { SCTS } from './SCTS';
 import { PDUType } from './Type/PDUType';
 

@@ -1,7 +1,7 @@
 import { Data } from './utils/Data/Data';
 import { Helper } from './utils/Helper';
-import { PDU, PDUOptions } from './utils/PDU';
-import { SCA } from './utils/SCA/SCA';
+import { PDU, type PDUOptions } from './utils/PDU';
+import type { SCA } from './utils/SCA/SCA';
 import { SubmitType } from './utils/Type/SubmitType';
 import { VP } from './utils/VP';
 

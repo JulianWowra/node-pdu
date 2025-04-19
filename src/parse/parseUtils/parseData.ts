@@ -1,10 +1,10 @@
-import { Data, DataOptions } from '../../utils/Data/Data';
+import { Data, type DataOptions } from '../../utils/Data/Data';
 import { Header } from '../../utils/Data/Header';
 import { Part } from '../../utils/Data/Part';
 import { DCS } from '../../utils/DCS';
 import { Helper } from '../../utils/Helper';
-import { PDUType } from '../../utils/Type/PDUType';
-import { GetSubstr } from '../index';
+import type { PDUType } from '../../utils/Type/PDUType';
+import type { GetSubstr } from '../index';
 
 /**
  * Parses the user data portion of a PDU string into a Data object.

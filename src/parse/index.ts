@@ -1,7 +1,7 @@
 import { Deliver } from '../Deliver';
 import { Report } from '../Report';
 import { Submit } from '../Submit';
-import { SCA } from '../utils/SCA/SCA';
+import type { SCA } from '../utils/SCA/SCA';
 import { DeliverType } from '../utils/Type/DeliverType';
 import { ReportType } from '../utils/Type/ReportType';
 import { SubmitType } from '../utils/Type/SubmitType';

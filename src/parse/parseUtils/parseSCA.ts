@@ -1,7 +1,7 @@
 import { Helper } from '../../utils/Helper';
 import { SCA } from '../../utils/SCA/SCA';
 import { SCAType } from '../../utils/SCA/SCAType';
-import { GetSubstr } from '../index';
+import type { GetSubstr } from '../index';
 
 /**
  * Parses the Service Center Address (SCA) from a given substring extractor.

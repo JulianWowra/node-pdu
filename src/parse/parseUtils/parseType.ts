@@ -2,7 +2,7 @@ import { DeliverType } from '../../utils/Type/DeliverType';
 import { PDUType } from '../../utils/Type/PDUType';
 import { ReportType } from '../../utils/Type/ReportType';
 import { SubmitType } from '../../utils/Type/SubmitType';
-import { GetSubstr } from '../index';
+import type { GetSubstr } from '../index';
 
 /**
  * Parses the PDU type from the provided PDU string.
