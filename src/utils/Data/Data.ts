@@ -134,7 +134,15 @@ export class Data {
 			const data = tmp.result;
 
 			if (haveHeader) {
-				size += headerSize;
+				if (pdu.dataCodingScheme.textAlphabet === DCS.ALPHABET_DEFAULT) {
+					// When using 7bit encoding (ALPHABET_DEFAULT), the UDH must be padded into septets.
+					// 1 byte = 8 bits, so we calculate the UDH size in septets: ceil(bytes * 8 / 7)
+					// This ensures the user data length is correct and no character is lost.
+					size += Math.ceil((headerSize * 8) / 7);
+				} else {
+					// For 8bit and UCS2, header size is already in bytes and can be added directly.
+					size += headerSize;
+				}
 			}
 
 			this._parts.push(new Part(data, size, text, header));
