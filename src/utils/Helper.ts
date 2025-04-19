@@ -229,6 +229,10 @@ export class Helper {
 			ret += this.toStringHex(buf); // here we have less then 8 bits
 		}
 
+		if (alignBits) {
+			length++; // Add 1 to length to account for the padding septet
+		}
+
 		return { length, result: ret };
 	}
 
