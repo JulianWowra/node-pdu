@@ -15,8 +15,9 @@
 		"provenance": true
 	},
 	"packageManager": "pnpm@10.8.1",
-	"dependencies": {},
 	"devDependencies": {
+		"@eslint/js": "^9.25.0",
+		"@types/node": "^18.19.86",
 		"eslint": "9.25.0",
 		"eslint-config-prettier": "10.1.2",
 		"prettier": "3.5.3",
@@ -41,7 +42,7 @@
 		"onlyBuiltDependencies": [
 			"esbuild"
 		]
-	}
+	},
 	"keywords": [
 		"pdu",
 		"sms"
