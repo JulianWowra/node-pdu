@@ -87,9 +87,10 @@ export class Helper {
 	static decode7Bit(text: string, inLen?: number, alignBits?: number) {
 		const ret: number[] = [];
 		const data = Buffer.from(text, 'hex');
+
 		let dataPos = 0; // Position in the input octets stream
 		let buf = 0; // Bit buffer, used in FIFO manner
-		let bufLen = 0; // Ammount of buffered bits
+		let bufLen = 0; // Amount of buffered bits
 		let inDone = 0;
 		let inExt = false;
 
@@ -113,22 +114,18 @@ export class Helper {
 			}
 
 			// Fetch next septet from the FIFO buffer
-			let digit = buf & 0x7f;
+			const digit = buf & 0x7f;
+
 			buf >>= 7;
 			bufLen -= 7;
 			inDone++;
 
 			if (digit % 128 === 27) {
+				// Escape character
 				inExt = true;
 			} else {
-				let c;
-
-				if (inExt) {
-					c = Helper.EXTENDED_TABLE.charCodeAt(digit);
-					inExt = false;
-				} else {
-					c = Helper.ALPHABET_7BIT.charCodeAt(digit);
-				}
+				let c = inExt ? Helper.EXTENDED_TABLE.charCodeAt(digit) || 63 : Helper.ALPHABET_7BIT.charCodeAt(digit);
+				inExt = false;
 
 				if (c < 0x80) {
 					ret.push(c);
@@ -140,7 +137,7 @@ export class Helper {
 					(Helper.EXTENDED_TABLE.charCodeAt(digit + 1) & 0xfc00) === 0xdc00
 				) {
 					// Surrogate Pair
-					c = 0x10000 + ((c & 0x03ff) << 10) + (Helper.EXTENDED_TABLE.charCodeAt(++digit) & 0x03ff);
+					c = 0x10000 + ((c & 0x03ff) << 10) + (Helper.EXTENDED_TABLE.charCodeAt(digit + 1) & 0x03ff);
 					ret.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 0x3f), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
 				} else {
 					ret.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
@@ -175,7 +172,7 @@ export class Helper {
 		const buffer = Buffer.from(text, 'ascii');
 
 		for (let i = 0; i < buffer.length; i++) {
-			pdu += this.toStringHex(buffer[i]);
+			pdu += Helper.toStringHex(buffer[i]);
 			length++;
 		}
 
@@ -190,50 +187,57 @@ export class Helper {
 	 *
 	 * @returns An object containing the length of the encoded text in septets and the result as a hexadecimal string
 	 */
-	static encode7Bit(text: string, alignBits?: number) {
-		let ret = '';
+	static encode7Bit(text: string, alignBits = 0) {
+		let result = '';
 		let buf = 0; // Bit buffer, used in FIFO manner
-		let bufLen = 0; // Ammount of buffered bits
-		let length = 0; // Ammount of produced septets
+		let bufLen = 0; // Amount of buffered bits
+		let length = 0; // Amount of produced septets
 
-		// Insert leading alignment zero bits if requested
-		if (alignBits) {
-			bufLen += alignBits;
-		}
+		// Adjust for initial padding if alignBits is specified
+		bufLen = alignBits;
 
 		for (const symb of text) {
-			let code;
+			let code: number;
 
 			if ((code = Helper.ALPHABET_7BIT.indexOf(symb)) !== -1) {
+				// Normal character
 				buf |= code << bufLen;
 				bufLen += 7;
 				length++;
 			} else if ((code = Helper.EXTENDED_TABLE.indexOf(symb)) !== -1) {
-				buf |= ((code << 7) | 27) << bufLen;
-				bufLen += 14;
-				length += 2;
+				// ESC character (27), then the actual extended character
+				buf |= 27 << bufLen;
+				bufLen += 7;
+				length++;
+
+				// Then add extended character
+				buf |= code << bufLen;
+				bufLen += 7;
+				length++;
 			} else {
-				buf |= 37 << bufLen; // Place space symbol
+				// Replace unknown with space (' '- code 0x20)
+				buf |= 32 << bufLen;
 				bufLen += 7;
 				length++;
 			}
 
 			while (bufLen >= 8) {
-				ret += this.toStringHex(buf & 0xff);
+				result += Helper.toStringHex(buf & 0xff);
 				buf >>= 8;
 				bufLen -= 8;
 			}
 		}
 
-		if (bufLen) {
-			ret += this.toStringHex(buf); // here we have less then 8 bits
+		// Write out remaining bits if needed
+		if (bufLen > 0) {
+			result += Helper.toStringHex(buf & 0xff);
 		}
 
 		if (alignBits) {
 			length++; // Add 1 to length to account for the padding septet
 		}
 
-		return { length, result: ret };
+		return { length, result };
 	}
 
 	/**
@@ -248,7 +252,7 @@ export class Helper {
 
 		for (let i = 0; i < text.length; i++) {
 			const byte = Helper.order(text.substring(i, i + 1));
-			pdu += this.toStringHex(byte, 4);
+			pdu += Helper.toStringHex(byte, 4);
 			length += 2;
 		}
 
@@ -263,12 +267,6 @@ export class Helper {
 	 * @returns The number as a hexadecimal string
 	 */
 	static toStringHex(number: number, fill = 2) {
-		let str = number.toString(16);
-
-		while (str.length < fill) {
-			str = '0' + str;
-		}
-
-		return str.toUpperCase();
+		return number.toString(16).padStart(fill, '0').toUpperCase();
 	}
 }

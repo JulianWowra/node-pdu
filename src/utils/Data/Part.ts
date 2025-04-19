@@ -61,6 +61,6 @@ export class Part {
 	 */
 	toString(pdu: Deliver | Submit) {
 		// concate pdu, size of part, headers, data
-		return this.getPduString(pdu) + this.getPartSize() + (this.header || '') + this.data;
+		return this.getPduString(pdu) + this.getPartSize() + (!!this.header ? this.header.toString() : '') + this.data;
 	}
 }
