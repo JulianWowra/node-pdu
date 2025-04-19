@@ -82,11 +82,14 @@ const tests = [
 ];
 
 describe('7bit encoding', () => {
-	test.each(tests)('$name', ({ text, alignBits, code: result, codeLen }) => {
-		expect(utils.Helper.encode7Bit(text, alignBits)).toEqual({
-			result,
-			length: codeLen ?? expect.any(Number)
-		});
+	test.each(tests)('$name', ({ text, alignBits, code, codeLen }) => {
+		const { result, length } = utils.Helper.encode7Bit(text, alignBits);
+
+		expect(result).toBe(code);
+
+		if (codeLen) {
+			expect(length).toBe(codeLen);
+		}
 	});
 });
 
