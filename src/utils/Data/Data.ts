@@ -102,9 +102,9 @@ export class Data {
 			headerSize++;
 		}
 
-		const parts = this.splitMessage(max, headerSize);
+		const parts = this.splitMessage(max - headerSize);
 		const haveHeader = parts.length > 1;
-		const uniqID = Math.floor(Math.random() * 0xffff);
+		const uniqID = (Math.random() * 0x10000) | 0;
 
 		// message will be splited, need headers
 		if (haveHeader) {
@@ -168,32 +168,18 @@ export class Data {
 	}
 
 	private sortParts() {
-		this._parts.sort((p1, p2) => {
-			const index1 = p1.header?.getCurrent() || 1;
-			const index2 = p2.header?.getCurrent() || 1;
-
-			return index1 > index2 ? 1 : -1;
-		});
-
-		this._data = this._parts.map((part) => part.text).join('');
+		this._data = this._parts
+			.sort((p1, p2) => (p1.header?.getCurrent() || 1) - (p2.header?.getCurrent() || 1))
+			.map((part) => part.text)
+			.join('');
 	}
 
-	private splitMessage(max: number, headerSize = Data.HEADER_SIZE) {
-		// size less or equal max
-		if (this.size <= max) {
-			return [this._data];
-		}
-
-		// parts of message
+	private splitMessage(size: number) {
 		const data = [];
-		const size = max - headerSize;
-		let offset = 0;
 
-		do {
-			const part = this._data.substring(offset, offset + size);
-			data.push(part);
-			offset += size;
-		} while (offset < this.size);
+		for (let i = 0; i < this._data.length; i += size) {
+			data.push(this._data.substring(i, i + size));
+		}
 
 		return data;
 	}

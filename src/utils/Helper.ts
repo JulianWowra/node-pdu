@@ -140,12 +140,13 @@ export class Helper {
 			let code: number;
 
 			if ((code = Helper.ALPHABET_7BIT.indexOf(symb)) !== -1) {
+				// Normal character
 				buf |= code << bufLen;
 				bufLen += 7;
 				length++;
 			} else if ((code = Helper.EXTENDED_TABLE.indexOf(symb)) !== -1) {
-				// Add escape character first
-				buf |= 27 << bufLen; // 27 is the escape character in the 7-bit alphabet
+				// ESC character (27), then the actual extended character
+				buf |= 27 << bufLen;
 				bufLen += 7;
 				length++;
 
@@ -154,7 +155,8 @@ export class Helper {
 				bufLen += 7;
 				length++;
 			} else {
-				buf |= 32 << bufLen; // Replace with space symbol (' ')
+				// Replace unknown with space (' '- code 0x20)
+				buf |= 32 << bufLen;
 				bufLen += 7;
 				length++;
 			}
@@ -166,9 +168,13 @@ export class Helper {
 			}
 		}
 
+		// Write out remaining bits if needed
 		if (bufLen > 0) {
-			// here we have less then 8 bits
-			result += Helper.toStringHex(buf);
+			result += Helper.toStringHex(buf & 0xff);
+		}
+
+		if (alignBits) {
+			length++;
 		}
 
 		return { length, result };
