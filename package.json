@@ -3,14 +3,17 @@
 	"version": "2.0.2",
 	"description": "Creates and parses SMS PDU strings",
 	"license": "MIT",
-	"author": "jackkum",
+	"author": "jackkum <jackkum@bk.ru>",
+	"contributors": [
+		"Julian Wowra <development@julianwowra.de>"
+	],
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/jackkum/node-pdu.git"
+		"url": "https://github.com/julianwowra/node-pdu.git"
 	},
-	"homepage": "https://github.com/jackkum/node-pdu",
+	"homepage": "https://github.com/julianwowra/node-pdu",
 	"dependencies": {
 		"tslib": "^2.6.2"
 	},

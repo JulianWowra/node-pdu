@@ -44,7 +44,7 @@ console.log(submit.toString());
 
 ## 📚 Full documentation
 
-Click [here](https://jackkum.github.io/node-pdu/)
+Click [here](https://julianwowra.github.io/node-pdu/)
 
 ## 🧪 Test script
 
@@ -62,6 +62,6 @@ yarn test
 
 **Thanks to these people who have contributed to this project:**
 
-[![Contributors](https://contrib.rocks/image?repo=jackkum/node-pdu)](https://github.com/jackkum/node-pdu/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=julianwowra/node-pdu)](https://github.com/julianwowra/node-pdu/graphs/contributors)
 
 Made with [contrib.rocks](https://contrib.rocks).
