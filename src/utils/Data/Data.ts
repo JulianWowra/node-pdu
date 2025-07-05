@@ -1,17 +1,16 @@
-import { Deliver } from '../../Deliver';
-import { Submit } from '../../Submit';
+import type { Deliver } from '../../Deliver';
+import type { Submit } from '../../Submit';
 import { DCS } from '../DCS';
 import { Helper } from '../Helper';
 import { Header } from './Header';
 import { Part } from './Part';
 
-export interface DataOptions {
-	data?: string;
-	size?: number;
-	parts?: Part[];
-	isUnicode?: boolean;
-}
-
+/**
+ * Represents the data content of an SMS message.
+ *
+ * Holds the actual message content, whether text or binary data. It is central to the purpose of SMS,
+ * conveying the intended information from sender to recipient.
+ */
 export class Data {
 	static readonly HEADER_SIZE = 7; // UDHL + UDH
 
@@ -20,6 +19,10 @@ export class Data {
 	private _parts: Part[];
 	private _isUnicode: boolean;
 
+	/**
+	 * Constructs a Data instance.
+	 * @param options An object containing optional parameters for the Data instance
+	 */
 	constructor(options: DataOptions = {}) {
 		this._size = options.size || 0;
 		this._data = options.data || '';
@@ -28,25 +31,69 @@ export class Data {
 	}
 
 	/*
-	 * getter & setter
+	 * ================================================
+	 *                Getter & Setter
+	 * ================================================
 	 */
 
+	/**
+	 * Gets the raw data of the SMS message.
+	 *
+	 * This property holds the actual content of the message, which could be text or binary data,
+	 * depending on how the message was encoded.
+	 *
+	 * @returns The raw data as a string
+	 */
 	get data() {
 		return this._data;
 	}
 
+	/**
+	 * Retrieves the size of the message data.
+	 *
+	 * The size is determined based on the encoding and content of the message. It reflects the
+	 * number of characters or bytes.
+	 *
+	 * @returns The size of the data
+	 */
 	get size() {
 		return this._size;
 	}
 
+	/**
+	 * Provides access to the individual parts of the message.
+	 *
+	 * For longer messages that are split into multiple parts (segments), this getter allows access
+	 * to each part. Each part contains a portion of the message data along with metadata.
+	 *
+	 * @returns An array of Part instances, each representing a segment of the message
+	 */
 	get parts() {
 		return this._parts;
 	}
 
+	/**
+	 * Indicates whether the message data is encoded using Unicode.
+	 *
+	 * This property is true if the message content includes characters that require Unicode encoding
+	 * (e.g., non-Latin characters). Otherwise, it's false.
+	 *
+	 * @returns A boolean indicating if the message data is Unicode.
+	 */
 	get isUnicode() {
 		return this._isUnicode;
 	}
 
+	/**
+	 * Sets the data for the SMS message.
+	 *
+	 * This method encodes the provided data string according to the specified PDU type (Deliver or Submit)
+	 * and updates the message parts accordingly. It handles encoding, part splitting, and header preparation.
+	 *
+	 * @param data The new message data as a string
+	 * @param pdu The PDU instance (Deliver or Submit) associated with this data
+	 * @returns The instance of this Data, allowing for method chaining
+	 */
 	setData(data: string, pdu: Deliver | Submit) {
 		this._data = data;
 
@@ -60,7 +107,9 @@ export class Data {
 	}
 
 	/*
-	 * private functions
+	 * ================================================
+	 *                Private functions
+	 * ================================================
 	 */
 
 	private checkData() {
@@ -102,9 +151,9 @@ export class Data {
 			headerSize++;
 		}
 
-		const parts = this.splitMessage(max, headerSize);
+		const parts = this.splitMessage(max - headerSize);
 		const haveHeader = parts.length > 1;
-		const uniqID = Math.floor(Math.random() * 0xffff);
+		const uniqID = (Math.random() * 0x10000) | 0;
 
 		// message will be splited, need headers
 		if (haveHeader) {
@@ -134,10 +183,18 @@ export class Data {
 			const data = tmp.result;
 
 			if (haveHeader) {
-				size += headerSize;
+				if (pdu.dataCodingScheme.textAlphabet === DCS.ALPHABET_DEFAULT) {
+					// When using 7bit encoding (ALPHABET_DEFAULT), the UDH must be padded into septets.
+					// 1 byte = 8 bits, so we calculate the UDH size in septets: ceil(bytes * 8 / 7)
+					// This ensures the user data length is correct and no character is lost.
+					size += Math.ceil((headerSize * 8) / 7);
+				} else {
+					// For 8bit and UCS2, header size is already in bytes and can be added directly.
+					size += headerSize;
+				}
 			}
 
-			this._parts.push(new Part(data, size, '', header));
+			this._parts.push(new Part(data, size, text, header));
 		});
 	}
 
@@ -160,44 +217,48 @@ export class Data {
 	}
 
 	private sortParts() {
-		this._parts.sort((p1, p2) => {
-			const index1 = p1.header?.getCurrent() || 1;
-			const index2 = p2.header?.getCurrent() || 1;
-
-			return index1 > index2 ? 1 : -1;
-		});
-
-		this._data = this._parts.map((part) => part.text).join('');
+		this._data = this._parts
+			.sort((p1, p2) => (p1.header?.getCurrent() || 1) - (p2.header?.getCurrent() || 1))
+			.map((part) => part.text)
+			.join('');
 	}
 
-	private splitMessage(max: number, headerSize = Data.HEADER_SIZE) {
-		// size less or equal max
-		if (this.size <= max) {
-			return [this._data];
-		}
-
-		// parts of message
+	private splitMessage(size: number) {
 		const data = [];
-		const size = max - headerSize;
-		let offset = 0;
 
-		do {
-			const part = this._data.substring(offset, offset + size);
-			data.push(part);
-			offset += size;
-		} while (offset < this.size);
+		for (let i = 0; i < this._data.length; i += size) {
+			data.push(this._data.substring(i, i + size));
+		}
 
 		return data;
 	}
 
 	/*
-	 * public functions
+	 * ================================================
+	 *                 Public functions
+	 * ================================================
 	 */
 
+	/**
+	 * Retrieves the textual content of the SMS message.
+	 *
+	 * This method decodes the raw data into a readable text format, considering the encoding scheme
+	 * (e.g., GSM 7-bit, UCS-2) used for the message.
+	 *
+	 * @returns The decoded text of the message
+	 */
 	getText() {
 		return this.data;
 	}
 
+	/**
+	 * Appends the parts from another PDU to this data instance.
+	 *
+	 * This method is used to combine the parts of another message (Deliver or Submit) into this one,
+	 * effectively concatenating the messages. It ensures parts are added only once and sorts them.
+	 *
+	 * @param pdu The PDU instance (Deliver or Submit) whose parts are to be appended
+	 */
 	append(pdu: Deliver | Submit) {
 		pdu.getParts().forEach((part) => {
 			if (!this.partExists(part)) {
@@ -208,3 +269,10 @@ export class Data {
 		this.sortParts();
 	}
 }
+
+export type DataOptions = {
+	data?: string;
+	size?: number;
+	parts?: Part[];
+	isUnicode?: boolean;
+};

@@ -1,7 +1,11 @@
-dist
-docs
+# Node modules
+.pnpm-store
 node_modules
+
+# Logs
+*.log*
+
+# Other
+docs
+dist
 tests-dist
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*

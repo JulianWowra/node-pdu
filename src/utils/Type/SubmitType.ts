@@ -1,16 +1,15 @@
 import { PDUType } from './PDUType';
 
-export interface SubmitParams {
-	replyPath?: number;
-	userDataHeader?: number;
-	statusReportRequest?: number;
-	validityPeriodFormat?: number;
-	rejectDuplicates?: number;
-}
-
+/**
+ * Represents the PDU type for an SMS-SUBMIT message in GSM SMS messaging.
+ */
 export class SubmitType extends PDUType {
 	readonly messageTypeIndicator = PDUType.SMS_SUBMIT;
 
+	/**
+	 * Constructs a SubmitType instance.
+	 * @param params Parameters for configuring the SubmitType instance
+	 */
 	constructor(params: SubmitParams = {}) {
 		super({
 			replyPath: params.replyPath ? 1 & params.replyPath : 0,
@@ -21,3 +20,11 @@ export class SubmitType extends PDUType {
 		});
 	}
 }
+
+export type SubmitParams = {
+	replyPath?: number;
+	userDataHeader?: number;
+	statusReportRequest?: number;
+	validityPeriodFormat?: number;
+	rejectDuplicates?: number;
+};

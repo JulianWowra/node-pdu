@@ -50,10 +50,10 @@ Click [here](https://julianwowra.github.io/node-pdu/)
 
 A small script allows you to scan the library for significant errors.
 
-Clone the repository, [install yarn](https://classic.yarnpkg.com/lang/en/docs/install/), download the dependencies and run:
+Clone the repository, [enable pnpm](https://pnpm.io/installation#using-corepack), download the dependencies and run:
 
 ```sh
-yarn test
+pnpm test
 ```
 
 ---
