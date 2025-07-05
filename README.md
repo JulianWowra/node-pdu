@@ -1,6 +1,8 @@
-# Protocol Description Unit for NodeJS
+# Protocol Description Unit
 
-_Project is looking for maintainer_
+- 👉🏻 This package provides functions to parse and generate **Protocol Description Unit** (PDU) for the **Short Message Service** (SMS).
+- ✉️ The use case is to **send and receive SMS messages** via **GSM modems** or mobile phones.
+- 🏃 It is written in **TypeScript** and can be used in **Node.js and browser environments**.
 
 [![NPM](https://nodei.co/npm/node-pdu.png)](https://npmjs.org/package/node-pdu)
 
@@ -44,13 +46,13 @@ console.log(submit.toString());
 
 ## 📚 Full documentation
 
-Click [here](https://julianwowra.github.io/node-pdu/)
+Click [here](https://julianwowra.github.io/node-pdu/).
 
 ## 🧪 Test script
 
 A small script allows you to scan the library for significant errors.
 
-Clone the repository, [enable pnpm](https://pnpm.io/installation#using-corepack), download the dependencies and run:
+Clone the repository, [enable pnpm](https://pnpm.io/installation#using-corepack), download the dependencies (`pnpm i`) and run:
 
 ```sh
 pnpm test
