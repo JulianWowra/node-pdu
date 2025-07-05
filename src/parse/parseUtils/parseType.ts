@@ -1,3 +1,4 @@
+import { Helper } from '../../utils/Helper';
 import { DeliverType } from '../../utils/Type/DeliverType';
 import { PDUType } from '../../utils/Type/PDUType';
 import { ReportType } from '../../utils/Type/ReportType';
@@ -14,8 +15,7 @@ import type { GetSubstr } from '../index';
  * @throws Throws an error if an unknown SMS type is encountered
  */
 export default function parseType(getPduSubstr: GetSubstr) {
-	const buffer = Buffer.from(getPduSubstr(2), 'hex');
-	const byte = buffer[0];
+	const byte = Helper.getByteFromHex(getPduSubstr(2));
 
 	const params = {
 		replyPath: 1 & (byte >> 7),

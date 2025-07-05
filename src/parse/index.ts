@@ -1,6 +1,7 @@
 import { Deliver } from '../Deliver';
 import { Report } from '../Report';
 import { Submit } from '../Submit';
+import { Helper } from '../utils/Helper';
 import type { SCA } from '../utils/SCA/SCA';
 import { DeliverType } from '../utils/Type/DeliverType';
 import { ReportType } from '../utils/Type/ReportType';
@@ -78,7 +79,7 @@ function parseDeliver(serviceCenterAddress: SCA, type: DeliverType, getSubstr: G
 	const protocolIdentifier = parsePID(getSubstr);
 	const dataCodingScheme = parseDCS(getSubstr);
 	const serviceCenterTimeStamp = parseSCTS(getSubstr);
-	const userDataLength = Buffer.from(getSubstr(2), 'hex')[0];
+	const userDataLength = Helper.getByteFromHex(getSubstr(2));
 	const userData = parseData(type, dataCodingScheme, userDataLength, getSubstr);
 
 	return new Deliver(address, userData, { serviceCenterAddress, type, protocolIdentifier, dataCodingScheme, serviceCenterTimeStamp });
@@ -97,11 +98,11 @@ function parseDeliver(serviceCenterAddress: SCA, type: DeliverType, getSubstr: G
 function parseReport(serviceCenterAddress: SCA, type: ReportType, getSubstr: GetSubstr) {
 	// The correct order of parsing is important!
 
-	const referencedBytes = Buffer.from(getSubstr(2), 'hex')[0];
+	const referencedBytes = Helper.getByteFromHex(getSubstr(2));
 	const address = parseSCA(getSubstr, true);
 	const timestamp = parseSCTS(getSubstr);
 	const discharge = parseSCTS(getSubstr);
-	const status = Buffer.from(getSubstr(2), 'hex')[0];
+	const status = Helper.getByteFromHex(getSubstr(2));
 
 	return new Report(address, referencedBytes, timestamp, discharge, status, { serviceCenterAddress, type });
 }
@@ -119,12 +120,12 @@ function parseReport(serviceCenterAddress: SCA, type: ReportType, getSubstr: Get
 function parseSubmit(serviceCenterAddress: SCA, type: SubmitType, getSubstr: GetSubstr) {
 	// The correct order of parsing is important!
 
-	const messageReference = Buffer.from(getSubstr(2), 'hex')[0];
+	const messageReference = Helper.getByteFromHex(getSubstr(2));
 	const address = parseSCA(getSubstr, true);
 	const protocolIdentifier = parsePID(getSubstr);
 	const dataCodingScheme = parseDCS(getSubstr);
 	const validityPeriod = parseVP(type, getSubstr);
-	const userDataLength = Buffer.from(getSubstr(2), 'hex')[0];
+	const userDataLength = Helper.getByteFromHex(getSubstr(2));
 	const userData = parseData(type, dataCodingScheme, userDataLength, getSubstr);
 
 	return new Submit(address, userData, {

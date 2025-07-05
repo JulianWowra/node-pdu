@@ -15,6 +15,49 @@ export class Helper {
 	static readonly limitCompress = 160;
 	static readonly limitUnicode = 70;
 
+	private static readonly TEXT_ENCODER = new TextEncoder();
+	private static readonly TEXT_DECODER = new TextDecoder();
+
+	/**
+	 * Converts a hex string to a Uint8Array.
+	 *
+	 * @param hex The hex string to convert
+	 * @returns A Uint8Array representing the hex string
+	 */
+	static hexToUint8Array(hex: string): Uint8Array {
+		if (hex.length % 2 !== 0) {
+			throw new Error('Hex string must have an even number of characters');
+		}
+
+		const bytes = new Uint8Array(hex.length / 2);
+
+		for (let i = 0; i < hex.length; i += 2) {
+			bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+		}
+
+		return bytes;
+	}
+
+	/**
+	 * Converts an ASCII string to a Uint8Array.
+	 *
+	 * @param ascii The ASCII string to convert
+	 * @returns A Uint8Array representing the ASCII string
+	 */
+	static asciiToUint8Array(ascii: string): Uint8Array {
+		return this.TEXT_ENCODER.encode(ascii);
+	}
+
+	/**
+	 * Converts the first two characters of a hexadecimal string to a number.
+	 *
+	 * @param hexStr The hexadecimal string to convert
+	 * @returns The number represented by the first two characters of the hexadecimal string
+	 */
+	static getByteFromHex(hexStr: string): number {
+		return parseInt(hexStr.substring(0, 2), 16);
+	}
+
 	/**
 	 * Capitalizes the first character of the input string.
 	 *
@@ -54,7 +97,7 @@ export class Helper {
 	static decode16Bit(text: string) {
 		return (text.match(/.{1,4}/g) || [])
 			.map((hex) => {
-				const buffer = Buffer.from(hex, 'hex');
+				const buffer = Helper.hexToUint8Array(hex);
 				return Helper.char((buffer[0] << 8) | buffer[1]);
 			})
 			.join('');
@@ -67,12 +110,7 @@ export class Helper {
 	 * @returns The decoded text
 	 */
 	static decode8Bit(text: string) {
-		return (text.match(/.{1,2}/g) || [])
-			.map((hex) => {
-				const buffer = Buffer.from(hex, 'hex');
-				return Helper.char(buffer[0]);
-			})
-			.join('');
+		return (text.match(/.{1,2}/g) || []).map((hex) => Helper.char(Helper.getByteFromHex(hex))).join('');
 	}
 
 	/**
@@ -86,7 +124,7 @@ export class Helper {
 	 */
 	static decode7Bit(text: string, inLen?: number, alignBits?: number) {
 		const ret: number[] = [];
-		const data = Buffer.from(text, 'hex');
+		const data = Helper.hexToUint8Array(text);
 
 		let dataPos = 0; // Position in the input octets stream
 		let buf = 0; // Bit buffer, used in FIFO manner
@@ -157,7 +195,7 @@ export class Helper {
 			}
 		}
 
-		return Buffer.from(ret).toString();
+		return this.TEXT_DECODER.decode(new Uint8Array(ret));
 	}
 
 	/**
@@ -167,16 +205,14 @@ export class Helper {
 	 * @returns An object containing the length of the encoded text and the result as a hexadecimal string
 	 */
 	static encode8Bit(text: string) {
-		let length = 0;
-		let pdu = '';
-		const buffer = Buffer.from(text, 'ascii');
+		const buffer = Helper.asciiToUint8Array(text);
+		let result = '';
 
 		for (let i = 0; i < buffer.length; i++) {
-			pdu += Helper.toStringHex(buffer[i]);
-			length++;
+			result += Helper.toStringHex(buffer[i]);
 		}
 
-		return { length, result: pdu };
+		return { length: buffer.length, result };
 	}
 
 	/**
@@ -247,16 +283,14 @@ export class Helper {
 	 * @returns An object containing the length of the encoded text in septets and the result as a hexadecimal string
 	 */
 	static encode16Bit(text: string) {
-		let length = 0;
 		let pdu = '';
 
 		for (let i = 0; i < text.length; i++) {
 			const byte = Helper.order(text.substring(i, i + 1));
 			pdu += Helper.toStringHex(byte, 4);
-			length += 2;
 		}
 
-		return { length, result: pdu };
+		return { length: text.length * 2, result: pdu };
 	}
 
 	/**

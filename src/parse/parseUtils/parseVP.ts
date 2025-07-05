@@ -1,3 +1,4 @@
+import { Helper } from '../../utils/Helper';
 import { PDUType } from '../../utils/Type/PDUType';
 import type { SubmitType } from '../../utils/Type/SubmitType';
 import { VP } from '../../utils/VP';
@@ -30,25 +31,24 @@ export default function parseVP(type: SubmitType, getPduSubstr: GetSubstr) {
 	}
 
 	if (vpf === PDUType.VPF_RELATIVE) {
-		const buffer = Buffer.from(getPduSubstr(2), 'hex');
-		const byte = buffer[0];
+		const byte = Helper.getByteFromHex(getPduSubstr(2));
 
-		if (byte <= 143) {
+		if (byte <= 0x8f) {
 			vp.setInterval((byte + 1) * (5 * 60));
 			return vp;
 		}
 
-		if (byte <= 167) {
-			vp.setInterval(3600 * 24 * 12 + (byte - 143) * (30 * 60));
+		if (byte <= 0xa7) {
+			vp.setInterval(3600 * 24 * 12 + (byte - 0x8f) * (30 * 60));
 			return vp;
 		}
 
-		if (byte <= 196) {
-			vp.setInterval((byte - 166) * (3600 * 24));
+		if (byte <= 0xc4) {
+			vp.setInterval((byte - 0xa7) * (3600 * 24));
 			return vp;
 		}
 
-		vp.setInterval((byte - 192) * (3600 * 24 * 7));
+		vp.setInterval((byte - 0xc4) * (3600 * 24 * 7));
 		return vp;
 	}
 

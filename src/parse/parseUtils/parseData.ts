@@ -102,8 +102,7 @@ function parsePart(type: PDUType, dataCodingScheme: DCS, userDataLength: number,
  * @returns A Header object representing the parsed user data header
  */
 function parseHeader(getPduSubstr: GetSubstr) {
-	let buf = Buffer.from(getPduSubstr(2), 'hex');
-	let ieLen = 0;
+	let udhl = Helper.getByteFromHex(getPduSubstr(2));
 	const ies: { type: number; dataHex: string }[] = [];
 
 	/*
@@ -114,11 +113,12 @@ function parseHeader(getPduSubstr: GetSubstr) {
 	 */
 
 	// Parse IE(s) as TLV
-	for (let udhl = buf[0]; udhl > 0; udhl -= 2 + ieLen) {
-		buf = Buffer.from(getPduSubstr(4), 'hex');
-		ieLen = buf[1];
+	while (udhl > 0) {
+		const ieType = Helper.getByteFromHex(getPduSubstr(2));
+		const ieLen = Helper.getByteFromHex(getPduSubstr(2));
 
-		ies.push({ type: buf[0], dataHex: getPduSubstr(ieLen * 2) });
+		ies.push({ type: ieType, dataHex: getPduSubstr(ieLen * 2) });
+		udhl -= 2 + ieLen;
 	}
 
 	return new Header(ies);

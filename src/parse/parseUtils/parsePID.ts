@@ -1,3 +1,4 @@
+import { Helper } from '../../utils/Helper';
 import { PID } from '../../utils/PID';
 import type { GetSubstr } from '../index';
 
@@ -11,8 +12,7 @@ import type { GetSubstr } from '../index';
  * @returns An instance of PID containing parsed information
  */
 export default function parsePID(getPduSubstr: GetSubstr) {
-	const buffer = Buffer.from(getPduSubstr(2), 'hex');
-	const byte = buffer[0];
+	const byte = Helper.getByteFromHex(getPduSubstr(2));
 	const pid = new PID();
 
 	pid.setPid(byte >> 6);

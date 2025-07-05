@@ -13,9 +13,8 @@ import type { GetSubstr } from '../index';
  * @returns An instance of SCA containing the parsed SCA information
  */
 export default function parseSCA(getPduSubstr: GetSubstr, isAddress: boolean) {
-	const buffer = Buffer.from(getPduSubstr(2), 'hex');
+	const size = Helper.getByteFromHex(getPduSubstr(2));
 	const sca = new SCA(isAddress);
-	let size = buffer[0];
 	let octets;
 
 	if (!size) {
@@ -23,36 +22,37 @@ export default function parseSCA(getPduSubstr: GetSubstr, isAddress: boolean) {
 	}
 
 	// if is OA or DA then the size in semi-octets
+	let adjustedSize = size;
 	if (isAddress) {
-		octets = Math.ceil(size / 2); // to full octets
+		octets = Math.ceil(adjustedSize / 2); // to full octets
 		// else size in octets
 	} else {
-		size--;
-		octets = size;
-		size *= 2; // to semi-octets for future usage
+		adjustedSize--;
+		octets = adjustedSize;
+		adjustedSize *= 2; // to semi-octets for future usage
 	}
 
-	const bufferScaType = Buffer.from(getPduSubstr(2), 'hex');
-	const type = new SCAType(bufferScaType[0]);
+	const typeValue = Helper.getByteFromHex(getPduSubstr(2));
+	const type = new SCAType(typeValue);
 	const hex = getPduSubstr(octets * 2);
 
 	sca.type.setType(type.type);
 	sca.type.setPlan(type.plan);
 
 	if (sca.type.type === SCAType.TYPE_ALPHANUMERICAL) {
-		size = Math.floor((size * 4) / 7); // semi-octets to septets
-		return sca.setPhone(Helper.decode7Bit(hex, size), false, !isAddress);
+		const septets = Math.floor((adjustedSize * 4) / 7); // semi-octets to septets
+		return sca.setPhone(Helper.decode7Bit(hex, septets), false, !isAddress);
 	}
 
 	// Detect padding char
-	if (!isAddress && hex.charAt(size - 2) === 'F') {
-		size--;
+	if (!isAddress && hex.charAt(adjustedSize - 2) === 'F') {
+		adjustedSize--;
 	}
 
 	const phone = (hex.match(/.{1,2}/g) || [])
 		.map((b) => SCA.mapFilterDecode(b).split('').reverse().join(''))
 		.join('')
-		.slice(0, size);
+		.slice(0, adjustedSize);
 
 	return sca.setPhone(phone, false, !isAddress);
 }

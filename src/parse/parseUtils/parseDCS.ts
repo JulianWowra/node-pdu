@@ -1,4 +1,5 @@
 import { DCS, type DCSOptions } from '../../utils/DCS';
+import { Helper } from '../../utils/Helper';
 import type { GetSubstr } from '../index';
 
 /**
@@ -9,8 +10,7 @@ import type { GetSubstr } from '../index';
  * @returns A DCS object representing the parsed Data Coding Scheme information
  */
 export default function parseDCS(getPduSubstr: GetSubstr) {
-	const buffer = Buffer.from(getPduSubstr(2), 'hex');
-	const byte = buffer[0];
+	const byte = Helper.getByteFromHex(getPduSubstr(2));
 	const dcsOptions: DCSOptions = {};
 
 	dcsOptions.encodeGroup = 0x0f & (byte >> 4);

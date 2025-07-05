@@ -198,9 +198,9 @@ export class SCA {
 	 * @returns The decoded character
 	 */
 	static mapFilterDecode(letter: string) {
-		const buffer = Buffer.from(letter, 'hex');
+		const byte = Helper.getByteFromHex(letter);
 
-		switch (buffer[0]) {
+		switch (byte) {
 			case 0x0a:
 				return '*';
 			case 0x0b:

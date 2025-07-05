@@ -25,7 +25,7 @@ export class Header {
 			 */
 
 			for (const ie of params) {
-				const buf = Buffer.from(ie.dataHex, 'hex');
+				const buf = Helper.hexToUint8Array(ie.dataHex);
 
 				// Parse known IEs (e.g. concatenetion)
 				if (ie.type === Header.IE_CONCAT_8BIT_REF) {
