@@ -11,7 +11,10 @@
 			"require": "./dist/cjs/index.cjs"
 		}
 	},
-	"repository": "github:JulianWowra/node-pdu",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JulianWowra/node-pdu.git"
+	},
 	"homepage": "https://github.com/JulianWowra/node-pdu",
 	"license": "MIT",
 	"author": "jackkum <jackkum@bk.ru>",
