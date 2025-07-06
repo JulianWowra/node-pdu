@@ -21,6 +21,7 @@ const sharedConfig: Options = {
 	clean: true,
 	minify: true,
 	treeshake: true,
+	sourcemap: true,
 	skipNodeModulesBundle: true,
 	banner: {
 		js: bannerComment
