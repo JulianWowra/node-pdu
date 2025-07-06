@@ -7,7 +7,7 @@ const bannerComment = `/*
  * 🏷️ Version:    ${pkg.version}
  * 📄 License:    ${pkg.license}
  * 🕒 Build:      ${new Date().toISOString()}
- * 🔗 Repository: ${pkg.repository}
+ * 🔗 Repository: ${pkg.repository.url}
  * 👤 Author:     ${pkg.author}
  * 👤 Maintainer: Julian Wowra <development@julianwowra.de>
  */\n`;
